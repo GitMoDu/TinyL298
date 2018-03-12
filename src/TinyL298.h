@@ -10,8 +10,8 @@
 /// 
 
 
-#ifndef _HBRIDGEDRIVER_h
-#define _HBRIDGEDRIVER_h
+#ifndef _TINYL298_h
+#define _TINYL298_h
 
 #if defined (ARDUINO) || defined(ATTINY_CORE)
 #include <Arduino.h>
@@ -34,10 +34,10 @@
 
 #define UINT16_QUARTER 16383 //(UINT16_MIDDLE/2)
 
-class HBridgeDriver
+class TinyL298
 {
 public:
-	HBridgeDriver(const uint8_t pinA1, const uint8_t pinA2)
+	TinyL298(const uint8_t pinA1, const uint8_t pinA2)
 		: A1(pinA1)
 		, A2(pinA2)
 	{
