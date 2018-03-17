@@ -36,6 +36,9 @@
 
 class TinyL298
 {
+private:
+	FastOut A1, A2;
+
 public:
 	TinyL298(const uint8_t pinA1, const uint8_t pinA2)
 		: A1(pinA1)
@@ -75,10 +78,6 @@ public:
 		}
 	}
 
-private:
-	FastOut A1, A2;
-
-private:
 	inline void SetNeutral()
 	{
 		OCR1B = 0;
