@@ -19,20 +19,20 @@
 #pragma Only ATmega328 and ATTiny 85 supported.
 #endif
 
+#include <stdint.h>
 #include <Fast.h>  //Fast and simple IO.
 
 #define OUTPUT_ENABLE_PIN PB4 // Chip pin 3. Fixed pin, tied to PWM on Timer1.
 
-#define UINT8_MAXVALUE 255
-#define INT8_MAXVALUE 127
 
-#define UINT16_MAXVALUE 65535
-#define INT16_MAXVALUE 32767
+#define UINT16_MIDDLE	((uint16_t)32767)
+#define UINT16_QUARTER	((uint16_t)16383) 
 
-#define UINT8_MIDDLE INT8_MAXVALUE
-#define UINT16_MIDDLE INT16_MAXVALUE
+#define NEUTRAL_RANGE	((uint16_t)500)
 
-#define UINT16_QUARTER 16383 //(UINT16_MIDDLE/2)
+#define BRAKE_BOTTOM	(UINT16_QUARTER-NEUTRAL_RANGE)
+#define NEUTRAL_TOP		(UINT16_MIDDLE+NEUTRAL_RANGE)
+#define NEUTRAL_BOTTOM	(UINT16_MIDDLE-NEUTRAL_RANGE)
 
 class TinyL298
 {
@@ -54,54 +54,58 @@ public:
 		TCCR1 = bit(CS10);					// No prescaler.
 		GTCCR = bit(COM1B1) | bit(PWM1B);   // Clear OC1B on compare.
 		OCR1B = 0;							// Duty cycle.
-		OCR1C = 255;						// Frequency.
+		OCR1C = UINT8_MAX;					// Frequency.
 	}
 
 	// ||Backward|Brake|Neutral|Forward||
 	void SetValue(uint16_t value)
 	{
-		if (value > UINT16_MIDDLE)
+		if (value > NEUTRAL_TOP)
 		{
-			SetForward(value - UINT16_MIDDLE);
+			//Set forward with duty-cycle.
+			OCR1B = map(value, NEUTRAL_TOP, UINT16_MAX, 0, UINT8_MAX);
+			A1 = HIGH;
+			A2 = LOW;
 		}
-		else if (value == UINT16_MIDDLE)
+		else if (value <= NEUTRAL_TOP && value >= NEUTRAL_BOTTOM)
 		{
-			SetNeutral();
+			//Set neutral.
+			OCR1B = 0;
 		}
-		else if (value < UINT16_QUARTER)
+		else if(value < NEUTRAL_BOTTOM && value > BRAKE_BOTTOM)
 		{
-			SetBackward(UINT16_QUARTER - value);
-		}
+			//Set brake with duty-cycle.
+			OCR1B = map(value, NEUTRAL_BOTTOM, BRAKE_BOTTOM, 0, UINT8_MAX);
+			A1 = LOW;
+			A2 = LOW;
+		} 
 		else
 		{
-			SetBrake(UINT16_MIDDLE - value);
+			//Set reverse with duty-cycle.
+			OCR1B = map(value, BRAKE_BOTTOM, 0, 0, UINT8_MAX);
+			A1 = LOW;
+			A2 = HIGH;
 		}
 	}
 
 	inline void SetNeutral()
 	{
-		OCR1B = 0;
+
 	}
 
 	inline void SetBrake(uint16_t value)
 	{
-		OCR1B = map(value, 0, UINT16_QUARTER, 0, UINT8_MAXVALUE);
-		A1 = LOW;
-		A2 = LOW;
+
 	}
 
 	inline void SetForward(uint16_t value)
 	{
-		OCR1B = map(value, UINT16_MIDDLE, UINT16_MAXVALUE, 0, UINT8_MAXVALUE);
-		A1 = HIGH;
-		A2 = LOW;
+
 	}
 
 	inline void SetBackward(uint16_t value)
 	{
-		OCR1B = map(value, 0, UINT16_QUARTER, 0, UINT8_MAXVALUE);
-		A1 = LOW;
-		A2 = HIGH;
+		
 	}
 };
 #endif
