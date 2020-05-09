@@ -1,13 +1,18 @@
 ///  TinyL298.h
 /// 
 ///  Created for personal use, use it at your own risk and benefit.
+
 ///  https://github.com/GitMoDu/TinyL298
 ///  Depends on Fast for IO https://github.com/GitMoDu/Fast
+///  Depends on PWM for ATTiny85 PWM https://github.com/micooke/PWM
 ///
 ///	 L298 H-Bridge driver using an ATtiny85.
 ///  Responds to 4 distinct states, each scalable.
-///  ||Backward|Brake|Neutral|Forward||
-/// 
+///		Backward [UINT16_QUARTER ; 0]
+///		Brake [UINT16_MIDDLE ; UINT16_QUARTER]
+///		Neutral [UINT16_MIDDLE]
+///		Forward [UINT16_MIDDLE ; UINT16_MAX]
+///  ~31 KHz carrier for PWM
 
 
 #ifndef _TINYL298_h
