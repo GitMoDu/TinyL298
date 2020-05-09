@@ -79,6 +79,8 @@ public:
 		{
 			// Set neutral (Off).
 			pwm.set_register(TimerIndex, PWMPin, 0);
+			A1 = LOW;
+			A2 = LOW;
 		}
 		else if (value <= NEUTRAL_BOTTOM && value >= BRAKE_BOTTOM)
 		{
