@@ -23,7 +23,9 @@
 
 #include <PWM.h>
 
-#define OUTPUT_ENABLE_PIN PIN_B4 // Chip pin 3 (PB4). Fixed pin, tied to PWM on Timer1.
+// Chip pin 6 (PB1). Fixed pin, tied to PWM on Timer1.
+// PB4 is free for use this way.
+#define OUTPUT_ENABLE_PIN PIN_B4 
 
 #define UINT16_MIDDLE	((uint16_t)32767)
 #define UINT16_QUARTER	((uint16_t)16383) 
@@ -37,20 +39,30 @@
 class TinyL298
 {
 private:
-	FastOut A1, A2;
+	FastOut A1;
+	FastOut A2;
+
+	const char PWMPin = 'a';
+	const uint8_t TimerIndex = 1;
+	const uint32_t Frequency = 31250;
 
 public:
 	TinyL298(const uint8_t pinA1, const uint8_t pinA2)
 		: A1(pinA1)
 		, A2(pinA2)
 	{
+		A1 = LOW;
+		A2 = LOW;
 	}
 
 	void Begin()
 	{
-		pwm.set(1, 'B', 31250, 2);
-		pwm.start(1); //start timer.
-		SetValue(UINT16_MIDDLE);
+		A1 = LOW;
+		A2 = LOW;
+
+		pwm.set(TimerIndex, PWMPin, Frequency, 2);
+		pwm.set_register(TimerIndex, PWMPin, 0);
+		pwm.start(TimerIndex);
 	}
 
 	// ||Backward|Brake|Neutral|Forward||
