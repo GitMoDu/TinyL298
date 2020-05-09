@@ -23,7 +23,7 @@
 
 #include <PWM.h>
 
-#define OUTPUT_ENABLE_PIN PIN_B4 // Chip pin 3. Fixed pin, tied to PWM on Timer1.
+#define OUTPUT_ENABLE_PIN PIN_B4 // Chip pin 3 (PB4). Fixed pin, tied to PWM on Timer1.
 
 #define UINT16_MIDDLE	((uint16_t)32767)
 #define UINT16_QUARTER	((uint16_t)16383) 
