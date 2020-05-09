@@ -56,29 +56,29 @@ public:
 	// ||Backward|Brake|Neutral|Forward||
 	void SetValue(const uint16_t value)
 	{
-		if (value > NEUTRAL_TOP)
+		if (value >= NEUTRAL_TOP)
 		{
-			//Set forward with duty-cycle.
-			pwm.set_register(1, 'B', map(value, NEUTRAL_TOP, UINT16_MAX, 0, UINT16_MAX));
+			// Set forward with duty-cycle.
+			pwm.set_register(TimerIndex, PWMPin, map(value, NEUTRAL_TOP, UINT16_MAX, 0, UINT8_MAX));
 			A1 = HIGH;
 			A2 = LOW;
 		}
-		else if (value <= NEUTRAL_TOP && value >= NEUTRAL_BOTTOM)
+		else if (value < NEUTRAL_TOP && value > NEUTRAL_BOTTOM)
 		{
-			//Set neutral (Off).
-			pwm.set_register(1, 'B', 0);
+			// Set neutral (Off).
+			pwm.set_register(TimerIndex, PWMPin, 0);
 		}
-		else if(value < NEUTRAL_BOTTOM && value >= BRAKE_BOTTOM)
+		else if (value <= NEUTRAL_BOTTOM && value >= BRAKE_BOTTOM)
 		{
-			//Set brake with duty-cycle.
-			pwm.set_register(1, 'B', map(value, NEUTRAL_BOTTOM, BRAKE_BOTTOM, 0, UINT16_MAX));
+			// Set brake with duty-cycle.
+			pwm.set_register(TimerIndex, PWMPin, map(value, NEUTRAL_BOTTOM, BRAKE_BOTTOM, 0, UINT8_MAX));
 			A1 = LOW;
 			A2 = LOW;
-		} 
+		}
 		else
 		{
-			//Set reverse with duty-cycle.
-			pwm.set_register(1, 'B', map(value, BRAKE_BOTTOM, 0, 0, UINT16_MAX));
+			// Set reverse with duty-cycle.
+			pwm.set_register(TimerIndex, PWMPin, map(value, BRAKE_BOTTOM - 1, 0, 0, UINT8_MAX));
 			A1 = LOW;
 			A2 = HIGH;
 		}
