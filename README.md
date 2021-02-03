@@ -6,7 +6,9 @@ L298 H-Bridge motor driver using an ATtiny85.
 Responds to 4 distinct states, each scalable: ||Backward|Brake|Neutral|Forward||
 
 
-Depends on Fast for IO https://github.com/GitMoDu/Fast
+Depends on:
+	Fast https://github.com/GitMoDu/Fast
+	PWM https://github.com/micooke/PWM
 
 
 
