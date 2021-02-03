@@ -7,9 +7,9 @@
 ///  Depends on PWM for ATTiny85 PWM https://github.com/micooke/PWM
 ///
 ///	 L298 H-Bridge driver using an ATtiny85.
-///  Responds to 4 distinct states, each scalable.
+///  Responds to 4 distinct states.
+///		Brake [UINT16_QUARTER ; 0]
 ///		Backward [UINT16_QUARTER ; 0]
-///		Brake [UINT16_MIDDLE ; UINT16_QUARTER]
 ///		Neutral [UINT16_MIDDLE]
 ///		Forward [UINT16_MIDDLE ; UINT16_MAX]
 ///  ~31 KHz carrier for PWM
@@ -30,16 +30,7 @@
 
 // Chip pin 6 (PB1). Fixed pin, tied to PWM on Timer1.
 // PB4 is free for use this way.
-#define OUTPUT_ENABLE_PIN PIN_B4 
-
-#define UINT16_MIDDLE	((uint16_t)32767)
-#define UINT16_QUARTER	((uint16_t)16383) 
-
-#define NEUTRAL_RANGE	((uint16_t)100)
-
-#define BRAKE_BOTTOM	(UINT16_QUARTER-NEUTRAL_RANGE)
-#define NEUTRAL_TOP		(UINT16_MIDDLE+NEUTRAL_RANGE)
-#define NEUTRAL_BOTTOM	(UINT16_MIDDLE-NEUTRAL_RANGE)
+#define OUTPUT_ENABLE_PIN PIN_B4
 
 class TinyL298
 {
@@ -50,6 +41,16 @@ private:
 	const char PWMPin = 'a';
 	const uint8_t TimerIndex = 1;
 	const uint32_t Frequency = 31250;
+	static const uint8_t OutputMax = UINT8_MAX;
+	static const uint8_t OutputMin = 0;
+
+
+	static const uint16_t ReverseBottomTolerance = 100;
+	static const uint16_t InputMin = 0;
+	static const uint16_t InputMax = UINT16_MAX;
+	static const uint16_t InputNeutral = UINT16_MAX / 2;
+	static const uint16_t InputBrakeTop = UINT16_MAX / 4;
+	static const uint16_t InputReverseBottom = InputBrakeTop + ReverseBottomTolerance;
 
 public:
 	TinyL298(const uint8_t pinA1, const uint8_t pinA2)
@@ -70,36 +71,35 @@ public:
 		pwm.start(TimerIndex);
 	}
 
-	// ||Backward|Brake|Neutral|Forward||
 	void SetValue(const uint16_t value)
 	{
-		if (value >= NEUTRAL_TOP)
+		if (value >= InputNeutral)
 		{
-			// Set forward with duty-cycle.
-			pwm.set_register(TimerIndex, PWMPin, map(value, NEUTRAL_TOP, UINT16_MAX, 0, UINT8_MAX));
+			// Set forward with duty-cycle. From low to high.
+			pwm.set_register(TimerIndex, PWMPin, map(value, InputNeutral, InputMax, OutputMin, OutputMax));
 			A1 = HIGH;
 			A2 = LOW;
 		}
-		else if (value < NEUTRAL_TOP && value > NEUTRAL_BOTTOM)
+		else if (value >= InputReverseBottom)
+		{
+			// Set reverse with duty-cycle. From high to low.
+			pwm.set_register(TimerIndex, PWMPin, map(value, InputNeutral, InputReverseBottom, OutputMin, OutputMax));
+			A1 = LOW;
+			A2 = HIGH;
+		}
+		else if (value >= InputBrakeTop)
 		{
 			// Set neutral (Off).
 			pwm.set_register(TimerIndex, PWMPin, 0);
 			A1 = LOW;
 			A2 = LOW;
 		}
-		else if (value <= NEUTRAL_BOTTOM && value >= BRAKE_BOTTOM)
-		{
-			// Set brake with duty-cycle.
-			pwm.set_register(TimerIndex, PWMPin, map(value, NEUTRAL_BOTTOM, BRAKE_BOTTOM, 0, UINT8_MAX));
-			A1 = LOW;
-			A2 = LOW;
-		}
 		else
 		{
-			// Set reverse with duty-cycle.
-			pwm.set_register(TimerIndex, PWMPin, map(value, BRAKE_BOTTOM - 1, 0, 0, UINT8_MAX));
+			// Set brake with duty-cycle. From high to low.
+			pwm.set_register(TimerIndex, PWMPin, map(value, InputBrakeTop, InputMin, OutputMin, OutputMax));
 			A1 = LOW;
-			A2 = HIGH;
+			A2 = LOW;
 		}
 	}
 };

@@ -16,7 +16,7 @@ TinyL298 MotorDriver(OUTPUT_A1_PIN, OUTPUT_A2_PIN);
 const uint32_t TestDurationMillis = 10000;
 const uint32_t TestPauseMillis = 1000;
 uint32_t LastUpdated = 0;
-uint16_t TestValue = UINT16_MIDDLE;
+uint16_t TestValue = UINT16_MAX / 2;
 uint32_t TestStart = 0;
 
 void setup()
@@ -35,26 +35,26 @@ void loop()
 
 		if (Elapsed > TestDurationMillis)
 		{
-			MotorDriver.SetValue(UINT16_MIDDLE);
+			MotorDriver.SetValue(UINT16_MAX / 2);
 			TestStart = millis();
 		}
 		if (Elapsed > (TestDurationMillis - TestPauseMillis))
 		{
-			MotorDriver.SetValue(UINT16_MIDDLE);
+			MotorDriver.SetValue(UINT16_MAX / 2);
 		}
-		else if (Elapsed <= (TestDurationMillis - TestPauseMillis)/2)
+		else if (Elapsed <= (TestDurationMillis - TestPauseMillis) / 2)
 		{
-			uint16_t value = map(Elapsed, 0, (TestDurationMillis - TestPauseMillis) /2, UINT16_MIDDLE, UINT16_MAX);
+			uint16_t value = map(Elapsed, 0, (TestDurationMillis - TestPauseMillis) / 2, UINT16_MAX / 2, UINT16_MAX);
 			MotorDriver.SetValue(value);
 		}
-		else if (Elapsed > ((TestDurationMillis - TestPauseMillis) / 2) && 
+		else if (Elapsed > ((TestDurationMillis - TestPauseMillis) / 2) &&
 			Elapsed <= (TestDurationMillis / 2))
 		{
-			MotorDriver.SetValue(UINT16_MIDDLE);
+			MotorDriver.SetValue(UINT16_MAX / 2);
 		}
 		else
 		{
-			uint16_t value = map(Elapsed, (TestDurationMillis - TestPauseMillis) /2, (TestDurationMillis - TestPauseMillis), UINT16_QUARTER, 0);
+			uint16_t value = map(Elapsed, (TestDurationMillis - TestPauseMillis) / 2, (TestDurationMillis - TestPauseMillis), UINT16_MAX / 4, 0);
 			MotorDriver.SetValue(value);
 		}
 	}
