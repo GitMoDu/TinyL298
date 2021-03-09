@@ -54,8 +54,11 @@ private:
 
 public:
 	TinyL298(const uint8_t pinA1, const uint8_t pinA2)
-		: A1(pinA1)
-		, A2(pinA2)
+		: A1(pinA1, LOW)
+		, A2(pinA2, LOW)
+	{
+	}
+
 	{
 		A1 = LOW;
 		A2 = LOW;
