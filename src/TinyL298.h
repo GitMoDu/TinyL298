@@ -30,7 +30,7 @@
 
 // Chip pin 6 (PB1). Fixed pin, tied to PWM on Timer1.
 // PB4 is free for use this way.
-#define OUTPUT_ENABLE_PIN PIN_B4
+#define OUTPUT_ENABLE_PIN PIN_B1
 
 class TinyL298
 {
