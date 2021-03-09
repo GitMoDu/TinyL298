@@ -59,12 +59,13 @@ public:
 	{
 	}
 
+	void Start()
 	{
 		A1 = LOW;
 		A2 = LOW;
 	}
 
-	void Begin()
+	void Stop()
 	{
 		A1 = LOW;
 		A2 = LOW;
