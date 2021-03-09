@@ -26,7 +26,6 @@
 #include <stdint.h>
 #include <Fast.h>  //Fast and simple IO.
 
-#include <PWM.h>
 
 // Chip pin 6 (PB1). Fixed pin, tied to PWM on Timer1.
 // PB4 is free for use this way.
@@ -40,7 +39,7 @@ private:
 
 	const char PWMPin = 'a';
 	const uint8_t TimerIndex = 1;
-	const uint32_t Frequency = 31250;
+	const uint32_t Frequency = 31500;
 	static const uint8_t OutputMax = UINT8_MAX;
 	static const uint8_t OutputMin = 0;
 
@@ -63,6 +62,19 @@ public:
 	{
 		A1 = LOW;
 		A2 = LOW;
+
+
+		pinMode(PIN_B1, OUTPUT);
+
+		TCCR1 = 0;
+		TIMSK &= ~_BV(TOIE1);
+		TCNT1 = 0;
+		//TCCR1 = 0b01100010;//16MHZ
+		TCCR1 = 0b01100001;//8MHZ
+		OCR1C = UINT8_MAX;
+		OCR1A = UINT8_MAX / 2;
+
+		TIFR = (1 << TOV1); // Clear timer overflow interrupt flag;
 	}
 
 	void Stop()
@@ -70,38 +82,45 @@ public:
 		A1 = LOW;
 		A2 = LOW;
 
-		pwm.set(TimerIndex, PWMPin, Frequency, 2);
-		pwm.set_register(TimerIndex, PWMPin, 0);
-		pwm.start(TimerIndex);
+		TCCR1 = 0;
+
+		pinMode(PIN_B1, OUTPUT);
+		digitalWrite(PIN_B1, LOW);
 	}
 
 	void SetValue(const uint16_t value)
 	{
+		// Auto start;
+		if (TCCR1 == 0)
+		{
+			Start();
+		}
+
 		if (value >= InputNeutral)
 		{
 			// Set forward with duty-cycle. From low to high.
-			pwm.set_register(TimerIndex, PWMPin, map(value, InputNeutral, InputMax, OutputMin, OutputMax));
+			OCR1A = map(value, InputNeutral, InputMax, OutputMin, OutputMax);
 			A1 = HIGH;
 			A2 = LOW;
 		}
 		else if (value >= InputReverseBottom)
 		{
 			// Set reverse with duty-cycle. From high to low.
-			pwm.set_register(TimerIndex, PWMPin, map(value, InputNeutral, InputReverseBottom, OutputMin, OutputMax));
+			OCR1A = map(value, InputNeutral, InputReverseBottom, OutputMin, OutputMax);
 			A1 = LOW;
 			A2 = HIGH;
 		}
 		else if (value >= InputBrakeTop)
 		{
 			// Set neutral (Off).
-			pwm.set_register(TimerIndex, PWMPin, 0);
+			OCR1A = 0;
 			A1 = LOW;
 			A2 = LOW;
 		}
 		else
 		{
 			// Set brake with duty-cycle. From high to low.
-			pwm.set_register(TimerIndex, PWMPin, map(value, InputBrakeTop, InputMin, OutputMin, OutputMax));
+			OCR1A = map(value, InputBrakeTop, InputMin, OutputMin, OutputMax);
 			A1 = LOW;
 			A2 = LOW;
 		}
