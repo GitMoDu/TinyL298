@@ -29,7 +29,7 @@
 
 // Chip pin 6 (PB1). Fixed pin, tied to PWM on Timer1.
 // PB4 is free for use this way.
-#define OUTPUT_ENABLE_PIN PIN_B1
+#define OUTPUT_ENABLE_PIN PIN_PB1
 
 class TinyL298
 {
@@ -63,7 +63,6 @@ public:
 		A1 = LOW;
 		A2 = LOW;
 
-
 		pinMode(PIN_B1, OUTPUT);
 
 		TCCR1 = 0;
@@ -84,8 +83,8 @@ public:
 
 		TCCR1 = 0;
 
-		pinMode(PIN_B1, OUTPUT);
-		digitalWrite(PIN_B1, LOW);
+		pinMode(OUTPUT_ENABLE_PIN, OUTPUT);
+		digitalWrite(OUTPUT_ENABLE_PIN, LOW);
 	}
 
 	void SetValue(const uint16_t value)
