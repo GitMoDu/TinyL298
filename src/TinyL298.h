@@ -4,7 +4,6 @@
 
 ///  https://github.com/GitMoDu/TinyL298
 ///  Depends on Fast for IO https://github.com/GitMoDu/Fast
-///  Depends on PWM for ATTiny85 PWM https://github.com/micooke/PWM
 ///
 ///	 L298 H-Bridge driver using an ATtiny85.
 ///  Responds to 4 distinct states.
