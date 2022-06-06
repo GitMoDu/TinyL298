@@ -23,7 +23,9 @@
 #endif
 
 #include <stdint.h>
-#include <Fast.h>  //Fast and simple IO.
+
+// https://github.com/GitMoDu/Fast
+#include <Fast.h>
 
 
 // Chip pin 6 (PB1). Fixed pin, tied to PWM on Timer1.
