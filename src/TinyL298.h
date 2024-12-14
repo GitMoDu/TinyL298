@@ -38,19 +38,19 @@ private:
 	FastOut A1;
 	FastOut A2;
 
-	const char PWMPin = 'a';
-	const uint8_t TimerIndex = 1;
-	const uint32_t Frequency = 31500;
-	static const uint8_t OutputMax = UINT8_MAX;
-	static const uint8_t OutputMin = 0;
+	static constexpr char PWMPin = 'a';
+	static constexpr uint8_t TimerIndex = 1;
+	static constexpr uint32_t Frequency = 31500;
+	static constexpr uint8_t OutputMax = UINT8_MAX;
+	static constexpr uint8_t OutputMin = 0;
 
 
-	static const uint16_t ReverseBottomTolerance = 100;
-	static const uint16_t InputMin = 0;
-	static const uint16_t InputMax = UINT16_MAX;
-	static const uint16_t InputNeutral = UINT16_MAX / 2;
-	static const uint16_t InputBrakeTop = UINT16_MAX / 4;
-	static const uint16_t InputReverseBottom = InputBrakeTop + ReverseBottomTolerance;
+	static constexpr uint16_t ReverseBottomTolerance = 100;
+	static constexpr uint16_t InputMin = 0;
+	static constexpr uint16_t InputMax = UINT16_MAX;
+	static constexpr uint16_t InputNeutral = UINT16_MAX / 2;
+	static constexpr uint16_t InputBrakeTop = UINT16_MAX / 4;
+	static constexpr uint16_t InputReverseBottom = InputBrakeTop + ReverseBottomTolerance;
 
 public:
 	TinyL298(const uint8_t pinA1, const uint8_t pinA2)
